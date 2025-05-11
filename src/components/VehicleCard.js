@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import DocumentList from './DocumentList';
+import VehicleDataForm from './VehicleDataForm';
 
-const VehicleCard = ({ vehicle, onDocumentUpdate }) => {
+const VehicleCard = ({ vehicle, onDocumentUpdate, onDelete, onUpdateVehicle }) => {
   const [showDetails, setShowDetails] = useState(false);
+  const [showData, setShowData] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isEditingData, setIsEditingData] = useState(false);
 
   return (
     <div className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
@@ -13,19 +17,85 @@ const VehicleCard = ({ vehicle, onDocumentUpdate }) => {
             {vehicle.brand} {vehicle.model} - {vehicle.type}
           </p>
         </div>
-        <button
-          onClick={() => setShowDetails(!showDetails)}
-          className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-        >
-          {showDetails ? 'Ocultar' : 'Ver documentos'}
-        </button>
+        <div className="flex space-x-2">
+          <button
+            onClick={() => setShowData(!showData)}
+            className="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm"
+          >
+            {showData ? 'Ocultar datos' : 'Datos vehículo'}
+          </button>
+          <button
+            onClick={() => setShowDetails(!showDetails)}
+            className="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm"
+          >
+            {showDetails ? 'Ocultar docs' : 'Documentos'}
+          </button>
+          <button
+            onClick={() => setShowDeleteConfirm(true)}
+            className="px-3 py-1 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-sm"
+          >
+            Eliminar
+          </button>
+        </div>
       </div>
       
-      {showDetails && (
+      {showDeleteConfirm && (
+        <div className="mt-4 p-4 bg-red-50 rounded-lg">
+          <p className="text-red-700 mb-3">¿Estás seguro que deseas eliminar este vehículo?</p>
+          <div className="flex space-x-3">
+            <button
+              onClick={() => {
+                onDelete(vehicle.id);
+                setShowDeleteConfirm(false);
+              }}
+              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
+            >
+              Sí, eliminar
+            </button>
+            <button
+              onClick={() => setShowDeleteConfirm(false)}
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors text-sm"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showData && !showDeleteConfirm && (
+        <div className="mt-4">
+          {isEditingData ? (
+            <VehicleDataForm 
+              vehicle={vehicle} 
+              onSave={(updatedVehicle) => {
+                onUpdateVehicle(updatedVehicle);
+                setIsEditingData(false);
+              }} 
+              onCancel={() => setIsEditingData(false)} 
+            />
+          ) : (
+            <div className="p-4 bg-gray-50 rounded-lg text-sm text-gray-700">
+              <p><span className="font-medium">Marca:</span> {vehicle.brand}</p>
+              <p><span className="font-medium">Modelo:</span> {vehicle.model}</p>
+              <p><span className="font-medium">Año:</span> {vehicle.year}</p>
+              <p><span className="font-medium">Tipo:</span> {vehicle.type}</p>
+              <p><span className="font-medium">Estado:</span> {vehicle.status === 'active' ? 'Activo' : 'Inactivo'}</p>
+              <button
+                onClick={() => setIsEditingData(true)}
+                className="mt-3 px-3 py-1 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors text-sm"
+              >
+                Editar datos
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+      
+      {showDetails && !showDeleteConfirm && !isEditingData && (
         <div className="mt-4">
           <DocumentList 
             documents={vehicle.documents} 
-            onDocumentUpdate={(docType, fileName) => onDocumentUpdate(vehicle.id, docType, fileName)}
+            onDocumentUpdate={(docType, fileName, expiry) => onDocumentUpdate(vehicle.id, docType, fileName, expiry)}
           />
         </div>
       )}
@@ -34,5 +104,3 @@ const VehicleCard = ({ vehicle, onDocumentUpdate }) => {
 };
 
 export default VehicleCard;
-
-// DONE

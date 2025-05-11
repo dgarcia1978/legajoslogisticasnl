@@ -4,7 +4,7 @@ const DocSidebar = ({ activeTab, setActiveTab }) => {
   const tabs = [
     { id: 'vehicles', label: 'Vehículos' },
     { id: 'drivers', label: 'Conductores' },
-    { id: 'expiring', label: 'Por vencer' },
+    { id: 'expiring', label: 'Vencimientos' },
     { id: 'reports', label: 'Reportes' },
     { id: 'send', label: 'Enviar documentos' }
   ];
@@ -30,5 +30,3 @@ const DocSidebar = ({ activeTab, setActiveTab }) => {
 };
 
 export default DocSidebar;
-
-// DONE

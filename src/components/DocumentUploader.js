@@ -1,40 +1,64 @@
 import React, { useState } from 'react';
+import { uploadDocument } from '../mock/documents'; // Importar la función de subida simulada
 
 const DocumentUploader = ({ documentType, onUpload }) => {
   const [file, setFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      const fileType = selectedFile.type;
+      if (fileType === 'application/pdf' || fileType.startsWith('image/')) {
+        setFile(selectedFile);
+        setError('');
+      } else {
+        setFile(null);
+        setError('Solo se permiten archivos PDF o imágenes.');
+      }
+    } else {
+      setFile(null);
+      setError('');
+    }
   };
 
-  const handleUpload = () => {
-    if (!file) return;
+  const handleUpload = async () => {
+    if (!file) {
+      setError('Debe seleccionar un archivo para subir.');
+      return;
+    }
     
     setIsUploading(true);
-    // Simulamos una subida de archivo
-    setTimeout(() => {
-      const fileName = `${documentType}_${Date.now()}.${file.name.split('.').pop()}`;
+    setError('');
+    
+    try {
+      const fileName = await uploadDocument(file, `${documentType}_${Date.now()}.${file.name.split('.').pop()}`);
       onUpload(fileName);
+    } catch (err) {
+      console.error("Error uploading document:", err);
+      setError("Error al subir el documento.");
+    } finally {
       setIsUploading(false);
       setFile(null);
-    }, 1500);
+    }
   };
 
   return (
     <div className="mt-4 p-4 bg-gray-50 rounded-lg">
       <h4 className="font-medium mb-2">Subir {documentType}</h4>
       <div className="flex items-center space-x-4">
-        <input
-          type="file"
-          onChange={handleFileChange}
-          className="block w-full text-sm text-gray-500
-            file:mr-4 file:py-2 file:px-4
-            file:rounded-lg file:border-0
-            file:text-sm file:font-semibold
-            file:bg-white file:text-gray-700
-            hover:file:bg-gray-100"
-        />
+        <label className="block w-full text-sm text-gray-500 cursor-pointer">
+          <input
+            type="file"
+            onChange={handleFileChange}
+            className="hidden" // Ocultar el input por defecto
+            accept=".pdf, image/*" // Limitar tipos de archivo permitidos
+          />
+          <span className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-semibold">
+            Seleccionar Archivo
+          </span>
+        </label>
         <button
           onClick={handleUpload}
           disabled={!file || isUploading}
@@ -48,6 +72,9 @@ const DocumentUploader = ({ documentType, onUpload }) => {
         <p className="mt-2 text-sm text-gray-600">
           Archivo seleccionado: <span className="font-medium">{file.name}</span>
         </p>
+      )}
+      {error && (
+        <p className="mt-2 text-sm text-red-500">{error}</p>
       )}
     </div>
   );

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const NewVehicleForm = ({ onAddVehicle, onCancel }) => {
+const VehicleDataForm = ({ vehicle, onSave, onCancel }) => {
   const [formData, setFormData] = useState({
     plate: '',
     brand: '',
@@ -9,6 +9,19 @@ const NewVehicleForm = ({ onAddVehicle, onCancel }) => {
     type: 'SEMI',
     status: 'active'
   });
+
+  useEffect(() => {
+    if (vehicle) {
+      setFormData({
+        plate: vehicle.plate,
+        brand: vehicle.brand,
+        model: vehicle.model,
+        year: vehicle.year,
+        type: vehicle.type,
+        status: vehicle.status
+      });
+    }
+  }, [vehicle]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -20,21 +33,12 @@ const NewVehicleForm = ({ onAddVehicle, onCancel }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const newVehicle = {
-      ...formData,
-      id: Date.now(), // ID temporal
-      documents: {
-        cedulaVerde: { file: '' },
-        seguro: { expiry: '', file: '' },
-        vtv: { expiry: '', file: '' }
-      }
-    };
-    onAddVehicle(newVehicle);
+    onSave({ ...vehicle, ...formData });
   };
 
   return (
     <div className="bg-white rounded-xl shadow-sm p-6">
-      <h2 className="text-xl font-bold mb-6">Agregar Nuevo Vehículo</h2>
+      <h2 className="text-xl font-bold mb-6">Editar Vehículo</h2>
       
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -120,7 +124,7 @@ const NewVehicleForm = ({ onAddVehicle, onCancel }) => {
             type="submit"
             className="flex-1 py-2 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
           >
-            Guardar Vehículo
+            Guardar Cambios
           </button>
           <button
             type="button"
@@ -135,4 +139,4 @@ const NewVehicleForm = ({ onAddVehicle, onCancel }) => {
   );
 };
 
-export default NewVehicleForm;
+export default VehicleDataForm;
