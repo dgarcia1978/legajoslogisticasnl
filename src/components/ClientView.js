@@ -91,15 +91,15 @@ const ClientView = ({ searchTerm }) => {
   };
 
   return (
-    <div className="p-6">
-      <h2 className="text-xl font-bold mb-6">Vista de Cliente</h2>
+    <div className="p-6 text-gray-800">
+      <h2 className="text-xl font-bold mb-6 uppercase tracking-wide">Vista de Cliente</h2>
 
       <div className="flex space-x-4 mb-6">
         <div className="relative">
           <select
             value={filterTransportista}
             onChange={(e) => setFilterTransportista(e.target.value)}
-            className="px-4 py-2 rounded-lg transition-colors text-sm bg-gray-200 text-gray-700 hover:bg-gray-300 appearance-none pr-8"
+            className="px-4 py-2 rounded-md transition-colors text-sm bg-gray-200 text-gray-700 hover:bg-gray-300 appearance-none pr-8 shadow-md"
           >
             <option value="all">Todos los Transportistas</option>
             {mockTransportistas.map(trans => (
@@ -108,7 +108,7 @@ const ClientView = ({ searchTerm }) => {
               </option>
             ))}
           </select>
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-600">
             <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
           </div>
         </div>
@@ -117,14 +117,14 @@ const ClientView = ({ searchTerm }) => {
           <select
             value={filterVehicleType}
             onChange={(e) => setFilterVehicleType(e.target.value)}
-            className="px-4 py-2 rounded-lg transition-colors text-sm bg-gray-200 text-gray-700 hover:bg-gray-300 appearance-none pr-8"
+            className="px-4 py-2 rounded-md transition-colors text-sm bg-gray-200 text-gray-700 hover:bg-gray-300 appearance-none pr-8 shadow-md"
           >
             <option value="all">Todos los Tipos</option>
             <option value="driver">Conductores</option>
             <option value="SEMI">Semi</option>
             <option value="TRACTOR">Tractor</option>
           </select>
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-600">
             <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
           </div>
         </div>
@@ -135,14 +135,14 @@ const ClientView = ({ searchTerm }) => {
           <p className="text-gray-600">No hay elementos que coincidan con los filtros.</p>
         ) : (
           displayItems.map(item => (
-            <div key={`${item.itemType}-${item.id}`} className="bg-white rounded-xl shadow-sm p-4 relative"> {/* Added relative positioning */}
+            <div key={`${item.itemType}-${item.id}`} className="bg-white rounded-xl shadow-md p-5 relative hover:shadow-lg transition-shadow"> {/* Added relative positioning */}
               <div className="flex justify-between items-start mb-3"> {/* Adjusted flex for alignment */}
                 <div>
-                  <h3 className="font-bold">{item.itemType === 'vehicle' ? item.plate : item.name} ({item.itemType === 'vehicle' ? item.type : 'Conductor'})</h3>
+                  <h3 className="font-bold uppercase tracking-wide">{item.itemType === 'vehicle' ? item.plate : item.name} ({item.itemType === 'vehicle' ? item.type : 'Conductor'})</h3>
                 </div>
                 <button
                   onClick={() => handleDownloadLegajo(item)}
-                  className="px-3 py-1 text-xs bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  className="px-3 py-1 text-xs bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors uppercase tracking-wide shadow-md"
                 >
                   Descargar
                 </button>
@@ -155,11 +155,11 @@ const ClientView = ({ searchTerm }) => {
                   
                   return (
                     doc.file && ( // Mostrar solo si tiene archivo
-                      <div key={docType} className="flex items-center space-x-2 p-2 rounded-lg">
+                      <div key={docType} className="flex items-center space-x-2 p-2 rounded-md">
                         {hasExpiry && (
                           <span className={`inline-block w-3 h-3 rounded-full ${
-                            status === 'expired' ? 'bg-red-500' : 
-                            status === 'warning' ? 'bg-yellow-500' : 'bg-green-500'
+                            status === 'expired' ? 'bg-red-600' : 
+                            status === 'warning' ? 'bg-yellow-600' : 'bg-green-600'
                           }`}></span>
                         )}
                         <span className="text-sm text-gray-700">{documentNames[docType] || docType}</span>
@@ -185,3 +185,5 @@ const ClientView = ({ searchTerm }) => {
 };
 
 export default ClientView;
+
+// DONE

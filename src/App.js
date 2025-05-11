@@ -5,15 +5,16 @@ import DocGridLayout from './components/DocGridLayout';
 import ReportsSection from './components/ReportsSection';
 import ExpiringDocuments from './components/ExpiringDocuments';
 import DocumentSender from './components/DocumentSender';
-import ClientView from './components/ClientView'; // Importar la vista de cliente
-import SearchBar from './components/SearchBar'; // Importar SearchBar
+import ClientView from './components/ClientView';
+import InsuranceProducerView from './components/InsuranceProducerView'; // Importar la vista de productor
+import SearchBar from './components/SearchBar';
 import { vehicles as initialVehicles, drivers as initialDrivers } from './mock/vehicles';
 import { drivers as initialDriversData } from './mock/drivers';
 import { isValidDateDDMMYYYY } from './utils/validators';
 
 const App = () => {
   const [activeTab, setActiveTab] = useState('vehicles');
-  const [viewType, setViewType] = useState('transportista'); // 'transportista' or 'cliente'
+  const [viewType, setViewType] = useState('transportista'); // 'transportista', 'cliente', 'productor'
   const [vehicles, setVehicles] = useState(initialVehicles);
   const [drivers, setDrivers] = useState(initialDriversData);
   const [searchTerm, setSearchTerm] = useState('');
@@ -86,32 +87,18 @@ const App = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="flex justify-center space-x-4 py-4 bg-white shadow-sm">
-        <button
-          onClick={() => setViewType('transportista')}
-          className={`px-4 py-2 rounded-lg transition-colors text-sm ${viewType === 'transportista' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
-        >
-          Vista Transportista
-        </button>
-        <button
-          onClick={() => setViewType('cliente')}
-          className={`px-4 py-2 rounded-lg transition-colors text-sm ${viewType === 'cliente' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
-        >
-          Vista Cliente
-        </button>
-      </div>
+    <div className="min-h-screen bg-gray-100 text-gray-800 font-sans flex">
+      <DocSidebar activeTab={activeTab} setActiveTab={setActiveTab} viewType={viewType} setViewType={setViewType} />
+      
+      <div className="flex-1 flex flex-col">
+        <div className="max-w-6xl mx-auto px-4 py-4 w-full">
+          <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+        </div>
 
-      <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
-
-      {viewType === 'transportista' ? (
-        <>
-          <DocHeader onAddVehicle={handleAddVehicle} />
-          
-          <div className="flex">
-            <DocSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-            
-            <main className="flex-1 min-h-[calc(100vh-80px)] overflow-y-auto">
+        <main className="flex-1 overflow-y-auto">
+          {viewType === 'transportista' && (
+            <>
+              <DocHeader onAddVehicle={handleAddVehicle} />
               {activeTab === 'vehicles' && (
                 <DocGridLayout 
                   items={vehicles} 
@@ -135,16 +122,14 @@ const App = () => {
               {activeTab === 'expiring' && <ExpiringDocuments onDocumentUpdate={handleDocumentUpdate} searchTerm={searchTerm} />}
               {activeTab === 'reports' && <ReportsSection vehicles={vehicles} drivers={drivers} searchTerm={searchTerm} />}
               {activeTab === 'send' && <DocumentSender vehicles={vehicles} drivers={drivers} searchTerm={searchTerm} />}
-            </main>
-          </div>
-        </>
-      ) : (
-        <ClientView vehicles={vehicles} drivers={drivers} searchTerm={searchTerm} />
-      )}
+            </>
+          )}
+          {viewType === 'cliente' && <ClientView vehicles={vehicles} drivers={drivers} searchTerm={searchTerm} />}
+          {viewType === 'productor' && <InsuranceProducerView onDocumentUpdate={handleDocumentUpdate} />}
+        </main>
+      </div>
     </div>
   );
 };
 
 export default App;
-
-// DONE

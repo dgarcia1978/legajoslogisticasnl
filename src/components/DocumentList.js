@@ -93,12 +93,12 @@ const DocumentList = ({ documents, onDocumentUpdate }) => {
         const hasFile = !!doc.file;
 
         return (
-          <div key={docType} className="bg-white p-4 rounded-lg shadow-sm">
+          <div key={docType} className="bg-gray-800 p-4 rounded-lg shadow-sm text-gray-100">
             <div className="flex items-center justify-between mb-2">
               <h4 className="font-medium">{documentNames[docType] || docType}</h4>
               <button
                 onClick={() => handleUpdateClick(docType)}
-                className="text-sm text-blue-600 hover:text-blue-800"
+                className="text-sm text-blue-600 hover:text-blue-800 transition-colors"
               >
                 {activeUpdate === docType ? 'Cancelar' : 'Actualizar'}
               </button>
@@ -111,22 +111,22 @@ const DocumentList = ({ documents, onDocumentUpdate }) => {
                   status === 'warning' ? 'bg-yellow-500' : 'bg-green-500'
                 }`}></span>
                 <p className={`text-sm ${
-                  status === 'expired' ? 'text-red-600' : 
-                  status === 'warning' ? 'text-yellow-600' : 'text-gray-600'
+                  status === 'expired' ? 'text-red-400' : 
+                  status === 'warning' ? 'text-yellow-400' : 'text-gray-400'
                 }`}>
                   {doc.expiry ? (doc.expiry === 'Vencida' ? 'Vencido' : `Vence: ${doc.expiry}`) : 'Sin fecha de vencimiento'}
                 </p>
               </div>
             )}
 
-            <p className={`text-xs mt-1 ${hasFile ? 'text-green-600' : 'text-red-600'}`}>
+            <p className={`text-xs mt-1 ${hasFile ? 'text-green-500' : 'text-red-500'}`}>
               {hasFile ? 'Archivo cargado' : 'Archivo no cargado'}
             </p>
             
             {doc.file && (
               <button 
                 onClick={() => handleViewDocument(doc.file)}
-                className="inline-block px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors mt-2"
+                className="inline-block px-3 py-1 text-sm bg-gray-700 text-gray-300 rounded hover:bg-gray-600 transition-colors mt-2 shadow-md"
               >
                 Ver documento
               </button>
@@ -136,17 +136,17 @@ const DocumentList = ({ documents, onDocumentUpdate }) => {
                <div className="mt-4 space-y-3">
                  {hasExpiry && (
                    <div>
-                     <label className="block text-sm font-medium text-gray-700 mb-1">Nueva Fecha de Vencimiento</label>
+                     <label className="block text-sm font-medium text-gray-400 mb-1">Nueva Fecha de Vencimiento</label>
                      <input
                        type="date" 
                        value={expiryDates[docType] ? formatDateToYYYYMMDD(expiryDates[docType]) : ''}
                        onChange={(e) => handleExpiryDateChange(docType, formatDateToDDMMYYYY(e.target.value))}
-                       className={`w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm ${dateError[docType] ? 'border-red-500' : 'border-gray-300'}`}
+                       className={`w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm bg-gray-700 text-gray-100 ${dateError[docType] ? 'border-red-500' : 'border-gray-600'}`}
                      />
                      {dateError[docType] && <p className="text-red-500 text-xs mt-1">{dateError[docType]}</p>}
                      <button
                        onClick={() => handleSaveExpiry(docType, doc.file)}
-                       className="mt-2 px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
+                       className="mt-2 px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm shadow-md"
                        disabled={!!dateError[docType] || !expiryDates[docType]}
                      >
                        Guardar Fecha

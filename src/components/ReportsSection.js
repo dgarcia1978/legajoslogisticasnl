@@ -67,8 +67,8 @@ const ReportsSection = ({ vehicles, drivers, searchTerm }) => {
   }, [vehicles, drivers]); // Recalcular cuando cambian vehicles o drivers
 
   const StatCard = ({ title, count, type }) => (
-    <div className="bg-white p-4 rounded-xl shadow-sm">
-      <h3 className="text-sm font-medium text-gray-500">{title}</h3>
+    <div className="bg-white p-4 rounded-xl shadow-md text-gray-800">
+      <h3 className="text-sm font-medium text-gray-600">{title}</h3>
       <p className={`text-2xl font-bold mt-1 ${
         type === 'expired' ? 'text-red-600' : 
         type === 'warning' ? 'text-yellow-600' : 
@@ -81,7 +81,7 @@ const ReportsSection = ({ vehicles, drivers, searchTerm }) => {
 
   return (
     <div className="p-6">
-      <h2 className="text-xl font-bold mb-6">Reporte de Documentos</h2>
+      <h2 className="text-xl font-bold mb-6 uppercase tracking-wide">Reporte de Documentos</h2>
       
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
         <StatCard title="Total Vencidos" count={totalDocs.expired} type="expired" />
@@ -91,8 +91,8 @@ const ReportsSection = ({ vehicles, drivers, searchTerm }) => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white p-4 rounded-xl shadow-sm">
-          <h3 className="font-medium mb-4">Documentos de Vehículos</h3>
+        <div className="bg-white p-4 rounded-xl shadow-md text-gray-800">
+          <h3 className="font-medium mb-4 uppercase tracking-wide">Documentos de Vehículos</h3>
           <div className="grid grid-cols-4 gap-2">
             <StatCard title="Vencidos" count={vehicleDocs.expired} type="expired" />
             <StatCard title="Por Vencer" count={vehicleDocs.warning} type="warning" />
@@ -101,8 +101,8 @@ const ReportsSection = ({ vehicles, drivers, searchTerm }) => {
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-xl shadow-sm">
-          <h3 className="font-medium mb-4">Documentos de Conductores</h3>
+        <div className="bg-white p-4 rounded-xl shadow-md text-gray-800">
+          <h3 className="font-medium mb-4 uppercase tracking-wide">Documentos de Conductores</h3>
           <div className="grid grid-cols-4 gap-2">
             <StatCard title="Vencidos" count={driverDocs.expired} type="expired" />
             <StatCard title="Por Vencer" count={driverDocs.warning} type="warning" />
