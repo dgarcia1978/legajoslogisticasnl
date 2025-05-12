@@ -46,8 +46,9 @@ const ExpiringDocuments = ({ onDocumentUpdate }) => {
         const hasExpiry = documentsWithExpiry.includes(docType);
         if (hasExpiry) {
           const status = doc.expiry ? getExpiryStatus(doc.expiry) : 'expired';
-          if ((filter === 'all' || filter === status) && (documentTypeFilter === 'all' || documentTypeFilter === docType)) {
-            if (status === 'warning' || status === 'expired') {
+          // Only include items that are warning or expired for this view
+          if (status === 'warning' || status === 'expired') {
+            if ((filter === 'all' || filter === status) && (documentTypeFilter === 'all' || documentTypeFilter === docType)) {
                acc.push({
                  id: item.id,
                  name: item.itemType === 'vehicle' ? item.plate : item.name,
@@ -59,18 +60,18 @@ const ExpiringDocuments = ({ onDocumentUpdate }) => {
                });
             }
           }
-        } else if (hasExpiry && !doc.expiry) {
+        } else if (!doc.expiry && (documentTypeFilter === 'all' || documentTypeFilter === docType)) {
            // Include documents with expiry field but no date if filter is 'expired' (as they are effectively expired)
-           if ((filter === 'all' || filter === 'expired') && (documentTypeFilter === 'all' || documentTypeFilter === docType)) {
-            acc.push({
-              id: item.id,
-              name: item.itemType === 'vehicle' ? item.plate : item.name,
-              itemType: item.itemType,
-              docType: docType, // Usar el nombre técnico para la actualización
-              docName: documentNames[docType] || docType, // Nombre legible para mostrar
-              expiry: 'Sin fecha de vencimiento',
-              status: 'expired'
-            });
+           if (filter === 'all' || filter === 'expired') {
+              acc.push({
+                id: item.id,
+                name: item.itemType === 'vehicle' ? item.plate : item.name,
+                itemType: item.itemType,
+                docType: docType, // Usar el nombre técnico para la actualización
+                docName: documentNames[docType] || docType, // Nombre legible para mostrar
+                expiry: 'Sin fecha de vencimiento',
+                status: 'expired'
+              });
            }
         }
       });
@@ -105,24 +106,24 @@ const ExpiringDocuments = ({ onDocumentUpdate }) => {
 
   return (
     <div className="p-6">
-      <h2 className="text-xl font-bold mb-6">Vencimientos</h2>
+      <h2 className="text-xl font-bold mb-6 uppercase tracking-wide">Vencimientos</h2>
       
       <div className="flex space-x-4 mb-6">
         <button
           onClick={() => setFilter('all')}
-          className={`px-4 py-2 rounded-lg transition-colors text-sm ${filter === 'all' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+          className={`px-4 py-2 rounded-md transition-colors text-sm uppercase tracking-wide ${filter === 'all' ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
         >
           Todos
         </button>
         <button
           onClick={() => setFilter('warning')}
-          className={`px-4 py-2 rounded-lg transition-colors text-sm ${filter === 'warning' ? 'bg-yellow-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+          className={`px-4 py-2 rounded-md transition-colors text-sm uppercase tracking-wide ${filter === 'warning' ? 'bg-yellow-600 text-white shadow-md' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
         >
           Por Vencer
         </button>
         <button
           onClick={() => setFilter('expired')}
-          className={`px-4 py-2 rounded-lg transition-colors text-sm ${filter === 'expired' ? 'bg-red-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+          className={`px-4 py-2 rounded-md transition-colors text-sm uppercase tracking-wide ${filter === 'expired' ? 'bg-red-600 text-white shadow-md' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
         >
           Vencidos
         </button>
@@ -131,7 +132,7 @@ const ExpiringDocuments = ({ onDocumentUpdate }) => {
           <select
             value={documentTypeFilter}
             onChange={(e) => setDocumentTypeFilter(e.target.value)}
-            className="px-4 py-2 rounded-lg transition-colors text-sm bg-gray-200 text-gray-700 hover:bg-gray-300 appearance-none pr-8"
+            className="px-4 py-2 rounded-md transition-colors text-sm bg-gray-200 text-gray-700 hover:bg-gray-300 appearance-none pr-8 shadow-md"
           >
             <option value="all">Todos los documentos</option>
             {filterableDocumentTypes.map(docType => (
@@ -140,7 +141,7 @@ const ExpiringDocuments = ({ onDocumentUpdate }) => {
               </option>
             ))}
           </select>
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-600">
             <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
           </div>
         </div>
@@ -152,7 +153,7 @@ const ExpiringDocuments = ({ onDocumentUpdate }) => {
           <div className="relative">
             <button
               onClick={() => setBulkUpdateDocType(bulkUpdateDocType ? null : selectedItems[0].docType)} // Abre con el tipo del primer seleccionado
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm uppercase tracking-wide shadow-md"
             >
               Actualizar
             </button>
@@ -191,7 +192,7 @@ const ExpiringDocuments = ({ onDocumentUpdate }) => {
             return (
               <div 
                 key={index} 
-                className={`bg-white p-4 rounded-lg shadow-sm flex justify-between items-center cursor-pointer ${isSelected ? 'border-2 border-blue-500' : ''}`}
+                className={`bg-white p-4 rounded-xl shadow-md flex justify-between items-center cursor-pointer hover:shadow-lg transition-shadow ${isSelected ? 'border-2 border-blue-500' : ''}`}
                 onClick={() => handleSelectItem(item)}
               >
                 <div>
@@ -199,8 +200,8 @@ const ExpiringDocuments = ({ onDocumentUpdate }) => {
                   <p className="text-sm text-gray-600">{item.docName}</p>
                   <div className="flex items-center space-x-2 mt-1">
                     <span className={`inline-block w-3 h-3 rounded-full ${
-                      item.status === 'expired' ? 'bg-red-500' : 
-                      item.status === 'warning' ? 'bg-yellow-500' : 'bg-green-500'
+                      item.status === 'expired' ? 'bg-red-600' : 
+                      item.status === 'warning' ? 'bg-yellow-600' : 'bg-green-600'
                     }`}></span>
                     <p className={`text-xs ${
                       item.status === 'expired' ? 'text-red-600' : 

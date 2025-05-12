@@ -9,6 +9,7 @@ import ClientView from './components/ClientView';
 import InsuranceProducerView from './components/InsuranceProducerView'; // Importar la vista de productor
 import VehicleTypeConfig from './components/VehicleTypeConfig'; // Importar la configuración de tipos de vehículo
 import VehicleDocConfig from './components/VehicleDocConfig'; // Importar la configuración de documentación vehicular
+import DriverDocConfig from './components/DriverDocConfig'; // Importar la configuración de documentación de conductores
 import SearchBar from './components/SearchBar';
 import { vehicles as initialVehicles, drivers as initialDrivers } from './mock/vehicles';
 import { drivers as initialDriversData } from './mock/drivers';
@@ -127,6 +128,7 @@ const App = () => {
               {activeTab === 'send' && <DocumentSender vehicles={vehicles} drivers={drivers} searchTerm={searchTerm} />}
               {activeTab === 'config-vehicle-types' && <VehicleTypeConfig />} {/* Nueva vista de configuración */}
               {activeTab === 'config-vehicle-docs' && <VehicleDocConfig />} {/* Nueva vista de configuración */}
+              {activeTab === 'config-driver-docs' && <DriverDocConfig />} {/* Nueva vista de configuración */}
             </>
           )}
           {viewType === 'cliente' && <ClientView vehicles={vehicles} drivers={drivers} searchTerm={searchTerm} />}

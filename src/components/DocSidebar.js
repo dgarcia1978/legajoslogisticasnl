@@ -52,7 +52,7 @@ const DocSidebar = ({ activeTab, setActiveTab, viewType, setViewType }) => {
         </button>
          <button
           onClick={() => setViewType('productor')}
-          className={`w-full text-left px-4 py-2 rounded-md transition-colors uppercase tracking-wide text-sm ${viewType === 'productor' ? 'bg-blue-600 text-white shadow-md' : 'hover:bg-gray-200'}`}
+          className={`w-full text-left px-4 py-2 rounded-md transition-colors text-sm uppercase tracking-wide ${viewType === 'productor' ? 'bg-blue-600 text-white shadow-md' : 'hover:bg-gray-200'}`}
         >
           Vista Productor
         </button>
@@ -76,7 +76,7 @@ const DocSidebar = ({ activeTab, setActiveTab, viewType, setViewType }) => {
                         onClick={() => handleConfigSubmenuClick('config-vehicle-types')}
                         className={`w-full text-left px-4 py-2 rounded-md transition-colors text-sm ${activeTab === 'config-vehicle-types' ? 'bg-blue-500 text-white' : 'hover:bg-gray-100'}`}
                       >
-                        Configurar Tipo de Vehículo
+                        Tipo de Vehículo
                       </button>
                     </li>
                      <li> {/* Nuevo submenú */}
@@ -84,7 +84,15 @@ const DocSidebar = ({ activeTab, setActiveTab, viewType, setViewType }) => {
                         onClick={() => handleConfigSubmenuClick('config-vehicle-docs')}
                         className={`w-full text-left px-4 py-2 rounded-md transition-colors text-sm ${activeTab === 'config-vehicle-docs' ? 'bg-blue-500 text-white' : 'hover:bg-gray-100'}`}
                       >
-                        Configurar Documentación Vehículo
+                        Documentación Vehículo
+                      </button>
+                    </li>
+                     <li> {/* Nuevo submenú */}
+                      <button
+                        onClick={() => handleConfigSubmenuClick('config-driver-docs')}
+                        className={`w-full text-left px-4 py-2 rounded-md transition-colors text-sm ${activeTab === 'config-driver-docs' ? 'bg-blue-500 text-white' : 'hover:bg-gray-100'}`}
+                      >
+                        Documentación Conductores
                       </button>
                     </li>
                     {/* Otros submenús de configuración aquí */}

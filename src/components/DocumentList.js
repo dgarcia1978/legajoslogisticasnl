@@ -5,19 +5,24 @@ import { formatDateToYYYYMMDD, formatDateToDDMMYYYY } from '../utils/formatters'
 import { getDocument } from '../mock/documents'; // Importar la función para obtener documento
 import { getStorage } from '../utils/storage'; // Importar getStorage
 
-const DocumentList = ({ documents, onDocumentUpdate }) => {
-  const [vehicleDocumentTypes, setVehicleDocumentTypes] = useState([]);
+const DocumentList = ({ documents, onDocumentUpdate, itemType }) => { // Recibir itemType
+  const [documentTypesConfig, setDocumentTypesConfig] = useState([]);
 
   useEffect(() => {
-    // Cargar tipos de documento desde localStorage al iniciar
-    const storedTypes = getStorage('vehicleDocumentTypes', [
+    // Cargar tipos de documento desde localStorage al iniciar según el tipo de item
+    const storageKey = itemType === 'vehicle' ? 'vehicleDocumentTypes' : 'driverDocumentTypes';
+    const defaultTypes = itemType === 'vehicle' ? [
       { name: 'Cedula Verde', hasExpiry: false },
       { name: 'VTV', hasExpiry: true },
       { name: 'Poliza de Seguro', hasExpiry: true },
-      { name: 'Pago de Seguro', hasExpiry: true },
-    ]);
-    setVehicleDocumentTypes(storedTypes);
-  }, []);
+    ] : [
+      { name: 'DNI', hasExpiry: false },
+      { name: 'Licencia de Conducir', hasExpiry: true },
+      { name: 'ART / Seguro Acc.Pers', hasExpiry: true },
+    ];
+    const storedTypes = getStorage(storageKey, defaultTypes);
+    setDocumentTypesConfig(storedTypes);
+  }, [itemType]); // Dependencia para recargar si cambia el tipo de item
 
   const getExpiryStatus = (expiryDate) => {
     if (!expiryDate || expiryDate === 'Vencida') return 'expired';
@@ -36,43 +41,50 @@ const DocumentList = ({ documents, onDocumentUpdate }) => {
   const [expiryDates, setExpiryDates] = useState({});
   const [dateError, setDateError] = useState({});
 
-  const handleUpdateClick = (docType) => {
-    setActiveUpdate(activeUpdate === docType ? null : docType);
+  const handleUpdateClick = (docName) => {
+    setActiveUpdate(activeUpdate === docName ? null : docName);
     setDateError({}); // Clear error when opening/closing
-    if (documents[docType] && documents[docType].expiry) {
-      setExpiryDates({ ...expiryDates, [docType]: documents[docType].expiry });
+    const docKey = documentTypesConfig.find(doc => doc.name === docName)?.name; // Find the technical name
+    if (docKey && documents[docKey] && documents[docKey].expiry) {
+      setExpiryDates({ ...expiryDates, [docName]: documents[docKey].expiry });
     } else {
-      setExpiryDates({ ...expiryDates, [docType]: '' });
+      setExpiryDates({ ...expiryDates, [docName]: '' });
     }
   };
 
-  const handleUploadComplete = (docType, fileName) => {
-    const expiry = expiryDates[docType] || ''; // Use the date from state, or empty string
+  const handleUploadComplete = (docName, fileName) => {
+    const expiry = expiryDates[docName] || ''; // Use the date from state, or empty string
     if (expiry && !isValidDateDDMMYYYY(expiry)) {
-      setDateError({ ...dateError, [docType]: 'Formato de fecha inválido (DD/MM/YYYY)' });
+      setDateError({ ...dateError, [docName]: 'Formato de fecha inválido (DD/MM/YYYY)' });
       return;
     }
-    onDocumentUpdate(docType, fileName, expiry);
+    const docKey = documentTypesConfig.find(doc => doc.name === docName)?.name; // Find the technical name
+    if (docKey) {
+      onDocumentUpdate(docKey, fileName, expiry);
+    }
     setActiveUpdate(null);
     setExpiryDates({});
     setDateError({});
   };
 
-  const handleExpiryDateChange = (docType, date) => {
+  const handleExpiryDateChange = (docName, date) => {
     setExpiryDates({
       ...expiryDates,
-      [docType]: date
+      [docName]: date
     });
-    setDateError({ ...dateError, [docType]: '' });
+    setDateError({ ...dateError, [docName]: '' });
   };
 
-  const handleSaveExpiry = (docType, currentFile) => {
-    const expiry = expiryDates[docType] || '';
+  const handleSaveExpiry = (docName, currentFile) => {
+    const expiry = expiryDates[docName] || '';
     if (expiry && !isValidDateDDMMYYYY(expiry)) {
-      setDateError({ ...dateError, [docType]: 'Formato de fecha inválido (DD/MM/YYYY)' });
+      setDateError({ ...dateError, [docName]: 'Formato de fecha inválido (DD/MM/YYYY)' });
       return;
     }
-    onDocumentUpdate(docType, currentFile, expiry);
+    const docKey = documentTypesConfig.find(doc => doc.name === docName)?.name; // Find the technical name
+     if (docKey) {
+      onDocumentUpdate(docKey, currentFile, expiry);
+    }
     setActiveUpdate(null);
     setExpiryDates({});
     setDateError({});
@@ -90,22 +102,22 @@ const DocumentList = ({ documents, onDocumentUpdate }) => {
 
   return (
     <div className="mt-4 space-y-3">
-      {vehicleDocumentTypes.map(docTypeConfig => {
-        const docType = docTypeConfig.name;
-        const doc = documents[docType] || { file: '', expiry: '' }; // Get document data, default if not exists
+      {documentTypesConfig.map(docTypeConfig => {
+        const docName = docTypeConfig.name;
+        const doc = documents[docName] || { file: '', expiry: '' }; // Get document data, default if not exists
         const hasExpiry = docTypeConfig.hasExpiry;
         const status = hasExpiry && doc.expiry ? getExpiryStatus(doc.expiry) : 'none';
         const hasFile = !!doc.file;
 
         return (
-          <div key={docType} className="bg-white p-4 rounded-lg shadow-sm">
+          <div key={docName} className="bg-white p-4 rounded-lg shadow-sm">
             <div className="flex items-center justify-between mb-2">
-              <h4 className="font-medium">{docType}</h4>
+              <h4 className="font-medium">{docName}</h4>
               <button
-                onClick={() => handleUpdateClick(docType)}
+                onClick={() => handleUpdateClick(docName)}
                 className="text-sm text-blue-600 hover:text-blue-800 transition-colors"
               >
-                {activeUpdate === docType ? 'Cancelar' : 'Actualizar'}
+                {activeUpdate === docName ? 'Cancelar' : 'Actualizar'}
               </button>
             </div>
             
@@ -137,30 +149,30 @@ const DocumentList = ({ documents, onDocumentUpdate }) => {
               </button>
             )}
             
-            {activeUpdate === docType && (
+            {activeUpdate === docName && (
                <div className="mt-4 space-y-3">
                  {hasExpiry && (
                    <div>
                      <label className="block text-sm font-medium text-gray-700 mb-1">Nueva Fecha de Vencimiento</label>
                      <input
                        type="date" 
-                       value={expiryDates[docType] ? formatDateToYYYYMMDD(expiryDates[docType]) : ''}
-                       onChange={(e) => handleExpiryDateChange(docType, formatDateToDDMMYYYY(e.target.value))}
-                       className={`w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm ${dateError[docType] ? 'border-red-500' : 'border-gray-300'}`}
+                       value={expiryDates[docName] ? formatDateToYYYYMMDD(expiryDates[docName]) : ''}
+                       onChange={(e) => handleExpiryDateChange(docName, formatDateToDDMMYYYY(e.target.value))}
+                       className={`w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm ${dateError[docName] ? 'border-red-500' : 'border-gray-300'}`}
                      />
-                     {dateError[docType] && <p className="text-red-500 text-xs mt-1">{dateError[docType]}</p>}
+                     {dateError[docName] && <p className="text-red-500 text-xs mt-1">{dateError[docName]}</p>}
                      <button
-                       onClick={() => handleSaveExpiry(docType, doc.file)}
+                       onClick={() => handleSaveExpiry(docName, doc.file)}
                        className="mt-2 px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm shadow-sm"
-                       disabled={!!dateError[docType] || !expiryDates[docType]}
+                       disabled={!!dateError[docName] || !expiryDates[docName]}
                      >
                        Guardar Fecha
                      </button>
                    </div>
                  )}
                  <DocumentUploader 
-                   documentType={docType}
-                   onUpload={(fileName) => handleUploadComplete(docType, fileName)}
+                   documentType={docName}
+                   onUpload={(fileName) => handleUploadComplete(docName, fileName)}
                  />
                </div>
             )}
@@ -172,5 +184,3 @@ const DocumentList = ({ documents, onDocumentUpdate }) => {
 };
 
 export default DocumentList;
-
-// DONE

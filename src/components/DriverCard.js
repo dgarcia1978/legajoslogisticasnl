@@ -1,15 +1,68 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DocumentList from './DocumentList';
 import DriverDataForm from './DriverDataForm';
+import { formatDateToYYYYMMDD } from '../utils/formatters';
+import { getStorage } from '../utils/storage';
 
 const DriverCard = ({ driver, onDocumentUpdate, onDelete, onUpdateDriver }) => {
   const [showDetails, setShowDetails] = useState(false);
   const [showData, setShowData] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isEditingData, setIsEditingData] = useState(false);
+  const [cardStatus, setCardStatus] = useState('green'); // Default status
+
+  const documentsWithExpiry = ['seguro', 'vtv', 'art', 'licencia'];
+
+  const getExpiryStatus = (expiryDate) => {
+    if (!expiryDate || expiryDate === 'Vencida') return 'expired';
+    
+    const today = new Date();
+    const expiry = new Date(formatDateToYYYYMMDD(expiryDate));
+    const diffTime = expiry - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+    
+    if (diffDays <= 0) return 'expired';
+    if (diffDays <= 10) return 'warning';
+    return 'valid';
+  };
+
+  useEffect(() => {
+    let status = 'green';
+    const driverDocumentTypes = getStorage('driverDocumentTypes', []);
+
+    for (const docTypeConfig of driverDocumentTypes) {
+      const doc = driver.documents[docTypeConfig.name] || { file: '', expiry: '' };
+      const hasExpiry = docTypeConfig.hasExpiry;
+      const hasFile = !!doc.file;
+
+      if (!hasFile) {
+        status = 'red';
+        break; // If any document is missing a file, the card is red
+      }
+
+      if (hasExpiry) {
+        const expiryStatus = getExpiryStatus(doc.expiry);
+        if (expiryStatus === 'expired') {
+          status = 'red';
+          break; // If any expiring document is expired, the card is red
+        }
+        if (expiryStatus === 'warning') {
+          status = 'yellow'; // If any expiring document is warning, the card is yellow (unless already red)
+        }
+      }
+    }
+    setCardStatus(status);
+
+  }, [driver.documents]); // Recalculate status when driver documents change
+
+  const statusBorderColor = {
+    red: 'border-red-600',
+    yellow: 'border-yellow-600',
+    green: 'border-green-600',
+  };
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-5 text-gray-800 hover:shadow-lg transition-shadow flex flex-col justify-between"> {/* Removed fixed height */}
+    <div className={`bg-white rounded-xl shadow-md p-5 text-gray-800 hover:shadow-lg transition-shadow flex flex-col justify-between border-t-4 ${statusBorderColor[cardStatus]}`}> {/* Added border */}
       <div> {/* Group top content */}
         <div className="flex justify-between items-center mb-3">
           <div className="flex items-center space-x-3">
@@ -99,7 +152,8 @@ const DriverCard = ({ driver, onDocumentUpdate, onDelete, onUpdateDriver }) => {
           <div className="mt-4">
             <DocumentList 
               documents={driver.documents} 
-              onDocumentUpdate={(docType, fileName, expiry) => onDocumentUpdate(driver.id, docType, fileName, expiry)}
+              onDocumentUpdate={(docType, fileName, expiry) => onDocumentUpdate(driver.id, docType, fileName, expiry, 'driver')} // Pass itemType
+              itemType="driver" // Pass itemType
             />
           </div>
         )}
