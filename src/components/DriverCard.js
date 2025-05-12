@@ -31,23 +31,28 @@ const DriverCard = ({ driver, onDocumentUpdate, onDelete, onUpdateDriver }) => {
     const driverDocumentTypes = getStorage('driverDocumentTypes', []);
 
     for (const docTypeConfig of driverDocumentTypes) {
-      const doc = driver.documents[docTypeConfig.name] || { file: '', expiry: '' };
+      const doc = driver.documents[docTypeConfig.name] || { file: '', expiry: '', active: true };
       const hasExpiry = docTypeConfig.hasExpiry;
       const hasFile = !!doc.file;
+      const isActive = doc.active !== undefined ? doc.active : true;
 
-      if (!hasFile) {
-        status = 'red';
-        break; // If any document is missing a file, the card is red
-      }
-
-      if (hasExpiry) {
-        const expiryStatus = getExpiryStatus(doc.expiry);
-        if (expiryStatus === 'expired') {
+      if (isActive) { // Only check status if the document is active for tracking
+        if (!hasFile) {
           status = 'red';
-          break; // If any expiring document is expired, the card is red
+          break; // If any active document is missing a file, the card is red
         }
-        if (expiryStatus === 'warning') {
-          status = 'yellow'; // If any expiring document is warning, the card is yellow (unless already red)
+
+        if (hasExpiry) {
+          const expiryStatus = getExpiryStatus(doc.expiry);
+          if (expiryStatus === 'expired') {
+            status = 'red';
+            break; // If any active expiring document is expired, the card is red
+          }
+          if (expiryStatus === 'warning') {
+            if (status !== 'red') { // Don't override red status
+              status = 'yellow'; // If any active expiring document is warning, the card is yellow
+            }
+          }
         }
       }
     }

@@ -100,83 +100,104 @@ const DocumentList = ({ documents, onDocumentUpdate, itemType }) => { // Recibir
     }
   };
 
+  const handleToggleActive = (docName) => {
+    // This functionality needs to be handled in the parent component (VehicleCard/DriverCard)
+    // as it modifies the document object's 'active' status.
+    // For now, we'll just log it.
+    console.log(`Toggle active status for ${docName}`);
+    // You would call a prop like onDocumentToggleActive(docName) here
+  };
+
   return (
     <div className="mt-4 space-y-3">
       {documentTypesConfig.map(docTypeConfig => {
         const docName = docTypeConfig.name;
-        const doc = documents[docName] || { file: '', expiry: '' }; // Get document data, default if not exists
+        const doc = documents[docName] || { file: '', expiry: '', active: true }; // Get document data, default if not exists, default active to true
         const hasExpiry = docTypeConfig.hasExpiry;
         const status = hasExpiry && doc.expiry ? getExpiryStatus(doc.expiry) : 'none';
         const hasFile = !!doc.file;
+        const isActive = doc.active !== undefined ? doc.active : true; // Default to active if not set
 
         return (
           <div key={docName} className="bg-white p-4 rounded-lg shadow-sm">
             <div className="flex items-center justify-between mb-2">
               <h4 className="font-medium">{docName}</h4>
-              <button
-                onClick={() => handleUpdateClick(docName)}
-                className="text-sm text-blue-600 hover:text-blue-800 transition-colors"
-              >
-                {activeUpdate === docName ? 'Cancelar' : 'Actualizar'}
-              </button>
-            </div>
-            
-            {hasExpiry && (
-              <div className="flex items-center space-x-2 mb-2">
-                <span className={`inline-block w-3 h-3 rounded-full ${
-                  status === 'expired' ? 'bg-red-500' : 
-                  status === 'warning' ? 'bg-yellow-500' : 'bg-green-500'
-                }`}></span>
-                <p className={`text-sm ${
-                  status === 'expired' ? 'text-red-600' : 
-                  status === 'warning' ? 'text-yellow-600' : 'text-gray-600'
-                }`}>
-                  {doc.expiry ? (doc.expiry === 'Vencida' ? 'Vencido' : `Vence: ${doc.expiry}`) : 'Sin fecha de vencimiento'}
-                </p>
-              </div>
-            )}
+              <div className="flex items-center space-x-2">
+                 <label className="inline-flex items-center cursor-pointer">
+                   <input
+                     type="checkbox"
+                     checked={isActive}
+                     onChange={() => handleToggleActive(docName)} // Call toggle function
+                     className="sr-only peer"
+                   />
+                   <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                   <span className="ms-3 text-sm font-medium text-gray-700">{isActive ? 'Activo' : 'Inactivo'}</span>
+                 </label>
+             <button
+               onClick={() => handleUpdateClick(docName)}
+               className="text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors px-3 py-1 shadow-sm" // Added blue background
+             >
+               {activeUpdate === docName ? 'Cancelar' : 'Actualizar'}
+             </button>
+           </div>
+         </div>
+         
+         {hasExpiry && (
+           <div className="flex items-center space-x-2 mb-2">
+             <span className={`inline-block w-3 h-3 rounded-full ${
+               status === 'expired' ? 'bg-red-500' : 
+               status === 'warning' ? 'bg-yellow-500' : 'bg-green-500'
+             }`}></span>
+             <p className={`text-sm ${
+               status === 'expired' ? 'text-red-600' : 
+               status === 'warning' ? 'text-yellow-600' : 'text-gray-600'
+             }`}>
+               {doc.expiry ? (doc.expiry === 'Vencida' ? 'Vencido' : `Vence: ${doc.expiry}`) : 'Sin fecha de vencimiento'}
+             </p>
+           </div>
+         )}
 
-            <p className={`text-xs mt-1 ${hasFile ? 'text-green-600' : 'text-red-600'}`}>
-              {hasFile ? 'Archivo cargado' : 'Archivo no cargado'}
-            </p>
-            
-            {doc.file && (
-              <button 
-                onClick={() => handleViewDocument(doc.file)}
-                className="inline-block px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors mt-2 shadow-sm"
-              >
-                Ver documento
-              </button>
-            )}
-            
-            {activeUpdate === docName && (
-               <div className="mt-4 space-y-3">
-                 {hasExpiry && (
-                   <div>
-                     <label className="block text-sm font-medium text-gray-700 mb-1">Nueva Fecha de Vencimiento</label>
-                     <input
-                       type="date" 
-                       value={expiryDates[docName] ? formatDateToYYYYMMDD(expiryDates[docName]) : ''}
-                       onChange={(e) => handleExpiryDateChange(docName, formatDateToDDMMYYYY(e.target.value))}
-                       className={`w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm ${dateError[docName] ? 'border-red-500' : 'border-gray-300'}`}
-                     />
-                     {dateError[docName] && <p className="text-red-500 text-xs mt-1">{dateError[docName]}</p>}
-                     <button
-                       onClick={() => handleSaveExpiry(docName, doc.file)}
-                       className="mt-2 px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm shadow-sm"
-                       disabled={!!dateError[docName] || !expiryDates[docName]}
-                     >
-                       Guardar Fecha
-                     </button>
-                   </div>
-                 )}
-                 <DocumentUploader 
-                   documentType={docName}
-                   onUpload={(fileName) => handleUploadComplete(docName, fileName)}
-                 />
-               </div>
-            )}
-          </div>
+         <p className={`text-xs mt-1 ${hasFile ? 'text-green-600' : 'text-red-600'}`}>
+           {hasFile ? 'Archivo cargado' : 'Archivo no cargado'}
+         </p>
+         
+         {doc.file && (
+           <button 
+             onClick={() => handleViewDocument(doc.file)}
+             className="inline-block px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors mt-2 shadow-sm"
+           >
+             Ver documento
+           </button>
+         )}
+         
+         {activeUpdate === docName && (
+            <div className="mt-4 space-y-3">
+              {hasExpiry && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Nueva Fecha de Vencimiento</label>
+                  <input
+                    type="date" 
+                    value={expiryDates[docName] ? formatDateToYYYYMMDD(expiryDates[docName]) : ''}
+                    onChange={(e) => handleExpiryDateChange(docName, formatDateToDDMMYYYY(e.target.value))}
+                    className={`w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm ${dateError[docName] ? 'border-red-500' : 'border-gray-300'}`}
+                  />
+                  {dateError[docName] && <p className="text-red-500 text-xs mt-1">{dateError[docName]}</p>}
+                  <button
+                    onClick={() => handleSaveExpiry(docName, doc.file)}
+                    className="mt-2 px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm shadow-sm"
+                    disabled={!!dateError[docName] || !expiryDates[docName]}
+                  >
+                    Guardar Fecha
+                  </button>
+                </div>
+              )}
+              <DocumentUploader 
+                documentType={docName}
+                onUpload={(fileName) => handleUploadComplete(docName, fileName)}
+              />
+            </div>
+         )}
+       </div>
         );
       })}
     </div>
