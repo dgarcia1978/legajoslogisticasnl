@@ -9,6 +9,7 @@ import BulkUpdateForm from './BulkUpdateForm'; // Reutilizar BulkUpdateForm
 const InsuranceProducerView = ({ onDocumentUpdate }) => {
   const [displayVehicles, setDisplayVehicles] = useState([]);
   const [filterTransportista, setFilterTransportista] = useState('all');
+  const [selectedVehicles, setSelectedVehicles] = useState([]);
   const [showBulkUpdateForm, setShowBulkUpdateForm] = useState(false);
 
   // Simular múltiples transportistas y asignar items a ellos
@@ -41,27 +42,27 @@ const InsuranceProducerView = ({ onDocumentUpdate }) => {
     setDisplayVehicles(sortedVehicles);
   }, [vehicles, filterTransportista]); // Dependencias para recalcular la lista
 
+  const handleSelectVehicle = (vehicleId) => {
+    setSelectedVehicles(prevSelected => 
+      prevSelected.includes(vehicleId)
+        ? prevSelected.filter(id => id !== vehicleId)
+        : [...prevSelected, vehicleId]
+    );
+  };
+
   const handleBulkUpdateComplete = (itemsToUpdate, docType, fileName, expiry) => {
     itemsToUpdate.forEach(vehicleId => {
       onDocumentUpdate(vehicleId, docType, fileName, expiry, 'vehicle');
     });
+    setSelectedVehicles([]);
     setShowBulkUpdateForm(false);
-  };
-
-  const handleViewDocument = (fileName) => {
-    const documentData = getDocument(fileName);
-    if (documentData) {
-      window.open(documentData, '_blank');
-    } else {
-      alert('Documento no encontrado.');
-    }
   };
 
   return (
     <div className="p-6">
       <h2 className="text-xl font-bold mb-6 uppercase tracking-wide">Pólizas de Seguro</h2>
 
-      <div className="flex space-x-4 mb-6 items-center"> {/* Added items-center for vertical alignment */}
+      <div className="flex space-x-4 mb-6">
         <div className="relative">
           <select
             value={filterTransportista}
@@ -80,17 +81,19 @@ const InsuranceProducerView = ({ onDocumentUpdate }) => {
           </div>
         </div>
 
-        <button
-          onClick={() => setShowBulkUpdateForm(true)}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm uppercase tracking-wide shadow-md"
-        >
-          Actualizar Póliza
-        </button>
+        {selectedVehicles.length > 0 && (
+          <button
+            onClick={() => setShowBulkUpdateForm(true)}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm uppercase tracking-wide shadow-md"
+          >
+            Actualizar Póliza ({selectedVehicles.length})
+          </button>
+        )}
       </div>
 
       {showBulkUpdateForm && (
         <BulkUpdateForm
-          selectedItems={displayVehicles.map(v => v.id)} // Pass all displayed vehicle IDs
+          selectedItems={selectedVehicles}
           documentType="seguro"
           onBulkUpdate={handleBulkUpdateComplete}
           onCancel={() => setShowBulkUpdateForm(false)}
@@ -105,17 +108,25 @@ const InsuranceProducerView = ({ onDocumentUpdate }) => {
             const seguroDoc = vehicle.documents.seguro || {};
             const hasFile = !!seguroDoc.file;
             const status = seguroDoc.expiry ? getExpiryStatus(seguroDoc.expiry) : 'expired';
+            const isSelected = selectedVehicles.includes(vehicle.id);
 
             return (
               <div 
                 key={vehicle.id} 
-                className="bg-white rounded-xl shadow-md p-4 text-gray-800"
+                className={`bg-white rounded-xl shadow-md p-4 text-gray-800 cursor-pointer ${isSelected ? 'border-2 border-blue-500' : ''}`}
+                onClick={() => handleSelectVehicle(vehicle.id)}
               >
                 <div className="flex items-center justify-between mb-2">
                   <div>
                     <p className="font-medium">{vehicle.plate}</p>
                     <p className="text-sm text-gray-600">Póliza de Seguro</p>
                   </div>
+                  <input
+                    type="checkbox"
+                    checked={isSelected}
+                    readOnly
+                    className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 bg-white"
+                  />
                 </div>
                 
                 <div className="flex items-center space-x-2 mb-2">
@@ -137,7 +148,7 @@ const InsuranceProducerView = ({ onDocumentUpdate }) => {
                 
                 {seguroDoc.file && (
                   <button 
-                    onClick={() => handleViewDocument(seguroDoc.file)}
+                    onClick={(e) => { e.stopPropagation(); handleViewDocument(seguroDoc.file); }} // Prevent card selection on button click
                     className="inline-block px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors mt-2 shadow-sm"
                   >
                     Ver documento
@@ -153,5 +164,3 @@ const InsuranceProducerView = ({ onDocumentUpdate }) => {
 };
 
 export default InsuranceProducerView;
-
-// DONE

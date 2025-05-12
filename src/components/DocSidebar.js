@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const DocSidebar = ({ activeTab, setActiveTab, viewType, setViewType }) => {
   const transportistaTabs = [
@@ -6,11 +6,24 @@ const DocSidebar = ({ activeTab, setActiveTab, viewType, setViewType }) => {
     { id: 'drivers', label: 'Conductores' },
     { id: 'expiring', label: 'Vencimientos' },
     { id: 'reports', label: 'Reportes' },
-    { id: 'send', label: 'Enviar documentos' }
+    { id: 'send', label: 'Enviar documentos' },
+    { id: 'config', label: 'Configuración' } // Nuevo tab de configuración
   ];
+
+  const [showConfigSubmenu, setShowConfigSubmenu] = useState(false);
 
   const handleTabClick = (tabId) => {
     setActiveTab(tabId);
+    if (tabId === 'config') {
+      setShowConfigSubmenu(!showConfigSubmenu);
+    } else {
+      setShowConfigSubmenu(false);
+    }
+  };
+
+  const handleConfigSubmenuClick = (subTabId) => {
+    setActiveTab(subTabId);
+    setShowConfigSubmenu(false); // Close submenu after selection
   };
 
   return (
@@ -23,49 +36,66 @@ const DocSidebar = ({ activeTab, setActiveTab, viewType, setViewType }) => {
         />
         <h1 className="text-xl font-bold uppercase tracking-wide">Genesi</h1>
       </div>
-      
-      <div className="mb-6">
-         <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Vista Actual</h3>
-         <div className="flex flex-col space-y-2"> {/* Changed to flex-col for vertical buttons */}
-            <button
-              onClick={() => setViewType('transportista')}
-              className={`px-3 py-1 rounded-md transition-colors text-xs uppercase tracking-wide ${viewType === 'transportista' ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
-            >
-              Transportista
-            </button>
-            <button
-              onClick={() => setViewType('cliente')}
-              className={`px-3 py-1 rounded-md transition-colors text-xs uppercase tracking-wide ${viewType === 'cliente' ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
-            >
-              Cliente
-            </button>
-             <button
-              onClick={() => setViewType('productor')}
-              className={`px-3 py-1 rounded-md transition-colors text-xs uppercase tracking-wide ${viewType === 'productor' ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
-            >
-              Productor
-            </button>
-         </div>
+
+      <div className="flex flex-col space-y-2 mb-6"> {/* Selector de vista */}
+        <button
+          onClick={() => setViewType('transportista')}
+          className={`w-full text-left px-4 py-2 rounded-md transition-colors uppercase tracking-wide text-sm ${viewType === 'transportista' ? 'bg-blue-600 text-white shadow-md' : 'hover:bg-gray-200'}`}
+        >
+          Vista Transportista
+        </button>
+        <button
+          onClick={() => setViewType('cliente')}
+          className={`w-full text-left px-4 py-2 rounded-md transition-colors uppercase tracking-wide text-sm ${viewType === 'cliente' ? 'bg-blue-600 text-white shadow-md' : 'hover:bg-gray-200'}`}
+        >
+          Vista Cliente
+        </button>
+         <button
+          onClick={() => setViewType('productor')}
+          className={`w-full text-left px-4 py-2 rounded-md transition-colors uppercase tracking-wide text-sm ${viewType === 'productor' ? 'bg-blue-600 text-white shadow-md' : 'hover:bg-gray-200'}`}
+        >
+          Vista Productor
+        </button>
       </div>
 
       {viewType === 'transportista' && (
         <nav className="flex-1">
-          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Menú Transportista</h3>
           <ul className="space-y-2">
             {transportistaTabs.map(tab => (
               <li key={tab.id}>
                 <button
                   onClick={() => handleTabClick(tab.id)}
-                  className={`w-full text-left px-4 py-2 rounded-md transition-colors uppercase tracking-wide text-sm ${activeTab === tab.id ? 'bg-blue-600 text-white shadow-md' : 'hover:bg-gray-200'}`}
+                  className={`w-full text-left px-4 py-2 rounded-md transition-colors uppercase tracking-wide text-sm ${activeTab === tab.id || (tab.id === 'config' && showConfigSubmenu) ? 'bg-blue-600 text-white shadow-md' : 'hover:bg-gray-200'}`}
                 >
                   {tab.label}
                 </button>
+                {tab.id === 'config' && showConfigSubmenu && (
+                  <ul className="ml-4 mt-1 space-y-1">
+                    <li>
+                      <button
+                        onClick={() => handleConfigSubmenuClick('config-vehicle-types')}
+                        className={`w-full text-left px-4 py-2 rounded-md transition-colors text-sm ${activeTab === 'config-vehicle-types' ? 'bg-blue-500 text-white' : 'hover:bg-gray-100'}`}
+                      >
+                        Configurar Tipo de Vehículo
+                      </button>
+                    </li>
+                     <li> {/* Nuevo submenú */}
+                      <button
+                        onClick={() => handleConfigSubmenuClick('config-vehicle-docs')}
+                        className={`w-full text-left px-4 py-2 rounded-md transition-colors text-sm ${activeTab === 'config-vehicle-docs' ? 'bg-blue-500 text-white' : 'hover:bg-gray-100'}`}
+                      >
+                        Configurar Documentación Vehículo
+                      </button>
+                    </li>
+                    {/* Otros submenús de configuración aquí */}
+                  </ul>
+                )}
               </li>
             ))}
           </ul>
         </nav>
       )}
-      {/* Add navigation for other views if needed */}
+      {/* Aquí podrías agregar navegación específica para otras vistas si fuera necesario */}
     </aside>
   );
 };

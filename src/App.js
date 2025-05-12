@@ -7,6 +7,8 @@ import ExpiringDocuments from './components/ExpiringDocuments';
 import DocumentSender from './components/DocumentSender';
 import ClientView from './components/ClientView';
 import InsuranceProducerView from './components/InsuranceProducerView'; // Importar la vista de productor
+import VehicleTypeConfig from './components/VehicleTypeConfig'; // Importar la configuración de tipos de vehículo
+import VehicleDocConfig from './components/VehicleDocConfig'; // Importar la configuración de documentación vehicular
 import SearchBar from './components/SearchBar';
 import { vehicles as initialVehicles, drivers as initialDrivers } from './mock/vehicles';
 import { drivers as initialDriversData } from './mock/drivers';
@@ -91,6 +93,8 @@ const App = () => {
       <DocSidebar activeTab={activeTab} setActiveTab={setActiveTab} viewType={viewType} setViewType={setViewType} />
       
       <div className="flex-1 flex flex-col">
+        <DocHeader onAddVehicle={handleAddVehicle} /> {/* DocHeader ahora maneja los botones de agregar */}
+
         <div className="max-w-6xl mx-auto px-4 py-4 w-full">
           <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
         </div>
@@ -98,7 +102,6 @@ const App = () => {
         <main className="flex-1 overflow-y-auto">
           {viewType === 'transportista' && (
             <>
-              <DocHeader onAddVehicle={handleAddVehicle} />
               {activeTab === 'vehicles' && (
                 <DocGridLayout 
                   items={vehicles} 
@@ -122,6 +125,8 @@ const App = () => {
               {activeTab === 'expiring' && <ExpiringDocuments onDocumentUpdate={handleDocumentUpdate} searchTerm={searchTerm} />}
               {activeTab === 'reports' && <ReportsSection vehicles={vehicles} drivers={drivers} searchTerm={searchTerm} />}
               {activeTab === 'send' && <DocumentSender vehicles={vehicles} drivers={drivers} searchTerm={searchTerm} />}
+              {activeTab === 'config-vehicle-types' && <VehicleTypeConfig />} {/* Nueva vista de configuración */}
+              {activeTab === 'config-vehicle-docs' && <VehicleDocConfig />} {/* Nueva vista de configuración */}
             </>
           )}
           {viewType === 'cliente' && <ClientView vehicles={vehicles} drivers={drivers} searchTerm={searchTerm} />}

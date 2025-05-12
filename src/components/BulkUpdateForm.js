@@ -70,8 +70,8 @@ const BulkUpdateForm = ({ selectedItems, documentType, onBulkUpdate, onCancel })
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-6 mt-6">
-      <h3 className="text-lg font-bold mb-4 uppercase tracking-wide">Actualización Masiva: {documentType}</h3>
+    <div className="bg-white rounded-xl shadow-sm p-6 mt-6">
+      <h3 className="text-lg font-bold mb-4">Actualización Masiva: {documentType}</h3>
       <p className="text-sm text-gray-600 mb-4">Aplicando a {selectedItems.length} elementos.</p>
 
       <div className="space-y-4">
@@ -84,12 +84,12 @@ const BulkUpdateForm = ({ selectedItems, documentType, onBulkUpdate, onCancel })
               file:mr-4 file:py-2 file:px-4
               file:rounded-lg file:border-0
               file:text-sm file:font-semibold
-              file:bg-blue-600 file:text-white
-              hover:file:bg-blue-700 transition-colors"
+              file:bg-white file:text-gray-700
+              hover:file:bg-gray-100"
             accept=".pdf, image/*"
             required
           />
-           {fileError && <p className="text-red-600 text-xs mt-1">{fileError}</p>}
+           {fileError && <p className="text-red-500 text-xs mt-1">{fileError}</p>}
         </div>
 
         <div>
@@ -98,24 +98,24 @@ const BulkUpdateForm = ({ selectedItems, documentType, onBulkUpdate, onCancel })
             type="date"
             value={expiryDate ? formatDateToYYYYMMDD(expiryDate) : ''}
             onChange={handleDateChange}
-            className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm ${dateError ? 'border-red-600' : 'border-gray-300'}`}
+            className={`w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm ${dateError ? 'border-red-500' : 'border-gray-300'}`}
             required
           />
-          {dateError && <p className="text-red-600 text-xs mt-1">{dateError}</p>}
+          {dateError && <p className="text-red-500 text-xs mt-1">{dateError}</p>}
         </div>
 
-        <div className="flex space-x-3 mt-6">
+        <div className="flex space-x-3">
           <button
             onClick={handleSubmit}
             disabled={isUploading || !file || !expiryDate || dateError || fileError}
-            className="flex-1 py-2 px-4 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors uppercase tracking-wide shadow-md"
+            className="flex-1 py-2 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed transition-colors"
           >
             {isUploading ? 'Actualizando...' : 'Aplicar Actualización'}
           </button>
           <button
             type="button"
             onClick={onCancel}
-            className="flex-1 py-2 px-4 bg-gray-200 text-gray-700 font-medium rounded-md hover:bg-gray-300 transition-colors uppercase tracking-wide shadow-md"
+            className="flex-1 py-2 px-4 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors"
           >
             Cancelar
           </button>
@@ -126,3 +126,5 @@ const BulkUpdateForm = ({ selectedItems, documentType, onBulkUpdate, onCancel })
 };
 
 export default BulkUpdateForm;
+
+// DONE
