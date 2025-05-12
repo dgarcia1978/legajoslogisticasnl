@@ -124,8 +124,8 @@ const DocumentList = ({ documents, onDocumentUpdate, itemType }) => { // Recibir
             {hasExpiry && (
               <div className="flex items-center space-x-2 mb-2">
                 <span className={`inline-block w-3 h-3 rounded-full ${
-                  status === 'expired' ? 'bg-red-500' : 
-                  status === 'warning' ? 'bg-yellow-500' : 'bg-green-500'
+                  status === 'expired' ? 'bg-red-600' : 
+                  status === 'warning' ? 'bg-yellow-600' : 'bg-green-600'
                 }`}></span>
                 <p className={`text-sm ${
                   status === 'expired' ? 'text-red-600' : 
@@ -184,3 +184,5 @@ const DocumentList = ({ documents, onDocumentUpdate, itemType }) => { // Recibir
 };
 
 export default DocumentList;
+
+// DONE

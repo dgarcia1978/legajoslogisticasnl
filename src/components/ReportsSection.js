@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { formatDateToYYYYMMDD } from '../utils/formatters';
 
-const ReportsSection = ({ vehicles, drivers, searchTerm }) => {
+const ReportsSection = ({ vehicles, drivers }) => { // Removed searchTerm as it's not used for counts
   const documentsWithExpiry = ['seguro', 'vtv', 'art', 'licencia'];
 
   const getExpiryStatus = (expiryDate) => {
@@ -48,11 +48,6 @@ const ReportsSection = ({ vehicles, drivers, searchTerm }) => {
   const [totalDocs, setTotalDocs] = useState({ expired: 0, warning: 0, valid: 0, noExpiry: 0 });
 
   useEffect(() => {
-    // Filtering logic for reports based on search term is complex as it aggregates counts.
-    // For simplicity in this example, reports will show counts for ALL items,
-    // regardless of the search term applied to the list views.
-    // A more complex implementation would filter items *before* counting.
-
     const vehicleCounts = countDocuments(vehicles);
     const driverCounts = countDocuments(drivers);
     
@@ -116,3 +111,5 @@ const ReportsSection = ({ vehicles, drivers, searchTerm }) => {
 };
 
 export default ReportsSection;
+
+// DONE

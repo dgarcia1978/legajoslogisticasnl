@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { vehicles } from '../mock/vehicles';
-import { drivers } from '../mock/drivers';
 import { formatDateToYYYYMMDD } from '../utils/formatters';
 import BulkUpdateForm from './BulkUpdateForm';
 
-const ExpiringDocuments = ({ onDocumentUpdate }) => {
+const ExpiringDocuments = ({ onDocumentUpdate, vehicles, drivers }) => { // Recibir vehicles y drivers
   const [filter, setFilter] = useState('all'); // 'all', 'warning', 'expired'
   const [documentTypeFilter, setDocumentTypeFilter] = useState('all'); // 'all' or specific docType
   const [selectedItems, setSelectedItems] = useState([]);
@@ -35,12 +33,12 @@ const ExpiringDocuments = ({ onDocumentUpdate }) => {
     licencia: 'Licencia de Conducir'
   };
 
-  const allItems = [
-    ...vehicles.map(v => ({ ...v, itemType: 'vehicle' })),
-    ...drivers.map(d => ({ ...d, itemType: 'driver' }))
-  ];
-
   useEffect(() => {
+    const allItems = [
+      ...(Array.isArray(vehicles) ? vehicles.map(v => ({ ...v, itemType: 'vehicle' })) : []),
+      ...(Array.isArray(drivers) ? drivers.map(d => ({ ...d, itemType: 'driver' })) : [])
+    ];
+
     const processedItems = allItems.reduce((acc, item) => {
       Object.entries(item.documents).forEach(([docType, doc]) => {
         const hasExpiry = documentsWithExpiry.includes(docType);

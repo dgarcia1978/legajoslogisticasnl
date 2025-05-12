@@ -55,17 +55,17 @@ const DocumentUploader = ({ documentType, onUpload }) => {
             className="hidden" // Ocultar el input por defecto
             accept=".pdf, image/*" // Limitar tipos de archivo permitidos
           />
-          <span className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-semibold">
+          <span className="inline-block px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-xs font-semibold shadow-md"> {/* Adjusted size */}
             Seleccionar Archivo
           </span>
         </label>
         <button
           onClick={handleUpload}
           disabled={!file || isUploading}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 
-            disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+          className="px-4 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 
+            disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors shadow-md"
         >
-          {isUploading ? 'Subiendo...' : 'Subir'}
+          {isUploading ? 'Subiendo...' : 'Guardar'} {/* Changed button text */}
         </button>
       </div>
       {file && (

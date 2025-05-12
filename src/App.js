@@ -55,8 +55,8 @@ const App = () => {
                 ...item.documents, 
                 [docType]: { 
                   ...item.documents[docType], 
-                  file: fileName || item.documents[docType].file, // Mantener file si no se actualiza
-                  expiry: formattedExpiry || item.documents[docType].expiry // Mantener expiry si no se actualiza
+                  file: fileName || (item.documents[docType] ? item.documents[docType].file : ''), // Mantener file si no se actualiza, con safe access
+                  expiry: formattedExpiry || (item.documents[docType] ? item.documents[docType].expiry : '') // Mantener expiry si no se actualiza, con safe access
                 } 
               } 
             }
@@ -140,3 +140,5 @@ const App = () => {
 };
 
 export default App;
+
+// DONE
