@@ -10,6 +10,8 @@ export const uploadDocument = (file, fileName) => {
       const storedDocuments = getStorage('documents', {});
       storedDocuments[fileName] = base64data;
       setStorage('documents', storedDocuments);
+      // En un entorno real, aquí se devolvería una URL pública o una referencia al archivo en el servidor
+      // Para la simulación, devolvemos el nombre del archivo como referencia
       resolve(fileName);
     };
     reader.onerror = reject;
